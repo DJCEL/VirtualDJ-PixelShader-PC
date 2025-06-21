@@ -1,4 +1,4 @@
-#include "SDK8/ShowPixelShader8.h"
+#include "ShowPixelShader8.h"
 
 //--------------------------------------------------------------------------------------
 HRESULT VDJ_API DllGetClassObject(const GUID &rclsid,const GUID &riid,void** ppObject)
