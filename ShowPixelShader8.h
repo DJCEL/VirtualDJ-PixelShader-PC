@@ -5,7 +5,7 @@
 #include "vdjVideo8.h"
 #include <stdio.h>
 #include <d3d11.h>
-#include <d3dcompiler.h>
+#include <d3dcompiler.h> // if we want to compile the shader with the code
 #include <atlbase.h>  // if we want to use CComPtr<XXXX>
 #include <string_view>
 
