@@ -416,7 +416,7 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromResourceCSOFile_D3D11(ID3D11Dev
 
 	if (!pPixelShader)
 	{
-		//TRESOURCEREF ref = {L"RT_RCDATA", 0, L"PIXELSHADER.CSO"};
+		//TRESOURCEREF ref = {L"RT_RCDATA", L"PIXELSHADER.CSO"};
 		//DWORD size;
 		//LPVOID data;
 		//hr = LoadFileFromResource(ref, &size, &data);
