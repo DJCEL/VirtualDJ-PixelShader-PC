@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <d3d11.h>
 #include <d3dcompiler.h>
-#include <atlbase.h>
+#include <atlbase.h>  // if we want to use CComPtr<XXXX>
 #include <string_view>
 
 
