@@ -270,12 +270,12 @@ HRESULT CShowPixelShader8::UpdateVertices_D3D11()
 	D3DXCOLOR color_vertex = D3DXCOLOR(1.0f, 1.0f, 1.0f, alpha);
 	D3DTEXCOORD T1 = { 0.0f , 0.0f }, T2 = { 0.0f , 1.0f }, T3 = { 1.0f , 0.0f }, T4 = { 1.0f , 1.0f };
 
-	// Triangle n°1 (Bottom Right)
+	// Triangle nÂ°1 (Bottom Right)
 	pNewVertices[0] = { P3 , color_vertex , T3 };
 	pNewVertices[1] = { P4 , color_vertex , T4 };
 	pNewVertices[2] = { P2 , color_vertex , T2 };
 
-	// Triangle n°2 (Top Left)
+	// Triangle nÂ°2 (Top Left)
 	pNewVertices[3] = { P2 , color_vertex , T2 };
 	pNewVertices[4] = { P1 , color_vertex , T1 };
 	pNewVertices[5] = { P3 , color_vertex , T3 };
@@ -394,7 +394,7 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDe
 {
 	HRESULT hr = S_FALSE;
 
-	const WCHAR* pShaderFileName = L"..\\PC\\PixelShader.cso";
+	const WCHAR* pShaderFileName = L"PixelShader.cso";
 
 	hr = D3DReadFileToBlob(pShaderFileName, &pPixelShaderBlob);
 	if (hr != S_OK || !pPixelShaderBlob) return S_FALSE;
