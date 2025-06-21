@@ -1,0 +1,137 @@
+#ifndef SHOWPIXELSHADER8_H
+#define SHOWPIXELSHADER8_H
+
+
+#include "vdjVideo8.h"
+#include <stdio.h>
+#include <d3d11.h>
+#include <d3dcompiler.h>
+#include <atlbase.h>
+#include <string_view>
+
+
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "d3dcompiler.lib")
+
+
+#ifndef SAFE_RELEASE
+#define SAFE_RELEASE(x) { if (x!=nullptr) { x->Release(); x=nullptr; } }
+#endif
+
+
+//////////////////////////////////////////////////////////////////////////
+// Class definition
+//////////////////////////////////////////////////////////////////////////
+class CShowPixelShader8 : public IVdjPluginVideoFx8
+{
+public:
+	CShowPixelShader8();
+	~CShowPixelShader8();
+	HRESULT VDJ_API OnLoad();
+	HRESULT VDJ_API OnGetPluginInfo(TVdjPluginInfo8 *info);
+	ULONG   VDJ_API Release();
+	HRESULT VDJ_API OnParameter(int id);
+	HRESULT VDJ_API OnGetParameterString(int id, char* outParam, int outParamSize);
+	HRESULT VDJ_API OnDeviceInit();
+	HRESULT VDJ_API OnDeviceClose();
+	HRESULT VDJ_API OnDraw();
+	HRESULT VDJ_API OnStart();
+	HRESULT VDJ_API OnStop();
+
+private:
+	static const EVdjVideoEngine VDJVIDEOENGINE = VdjVideoEngineDirectX11;
+	typedef ID3D11Device VDJVIDEODEVICE;
+	typedef ID3D11ShaderResourceView VDJVIDEOTEXTURE;
+	struct D3DPOSITION
+	{
+		float x;
+		float y;
+		float z;
+	};
+	struct D3DXCOLOR
+	{
+	public:
+		D3DXCOLOR() = default;
+		D3DXCOLOR(FLOAT r, FLOAT g, FLOAT b, FLOAT a)
+		{
+			this->r = r;
+			this->g = g;
+			this->b = b;
+			this->a = a;
+		}
+
+		operator FLOAT* ()
+		{
+			return &r;
+		}
+
+		FLOAT r, g, b, a;
+	};
+	struct D3DTEXCOORD
+	{
+		float tu;
+		float tv;
+	};
+
+	struct TLVERTEX
+	{
+		D3DPOSITION position;
+		D3DXCOLOR color;
+		D3DTEXCOORD texture;
+	};
+	typedef struct _TRESOURCEREF
+	{
+		const TCHAR* type;
+		const TCHAR* name;
+
+	} TRESOURCEREF;
+
+	void OnResizeVideo();
+	void OnSlider(int id);
+	HRESULT Initialize_D3D11(ID3D11Device* pDevice);
+	HRESULT Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderResourceView* pTextureView, TVertex8* pVertices);
+	HRESULT Create_PixelShader_D3D11(ID3D11Device* pDevice);
+	HRESULT Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDevice);
+	HRESULT Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* pDevice);
+	HRESULT Create_PixelShaderFromResourceCSOFile_D3D11(ID3D11Device* pDevice);
+	HRESULT CreateVertexBufferDynamic_D3D11(ID3D11Device* pDevice);
+	HRESULT UpdateVertices_D3D11();
+	HRESULT UpdateVertices_v2_D3D11();
+	HRESULT UpdateVertices_Dynamic_D3D11(ID3D11DeviceContext* ctx);
+	std::string_view getResource(const WCHAR* resourceType, const WCHAR* resourceName);
+	HRESULT LoadFileFromResource(TRESOURCEREF ref, DWORD& size, LPVOID& data);
+	void initImageSize(int* srcX, int* srcY, int* srcWidth, int* srcHeight, float srcAr, int srcOrientation, int width, int height, int* dstX, int* dstY, int* dstWidth, int* dstHeight);
+	void setVertexDst(float dstX, float dstY, float width, float height);
+	void setVertexSrc(float srcX, float srcY, float srcWidth, float srcHeight, float textureWidth, float textureHeight);
+
+	
+
+	ID3D11Device* pD3DDevice;
+	ID3D11DeviceContext* pImmediateContext;
+	ID3D11Buffer* pNewVertexBuffer;
+	ID3D11PixelShader* pPixelShader;
+	ID3D11RenderTargetView* pRenderTargetView;
+	ID3DBlob* pPixelShaderBlob;
+
+	TLVERTEX pNewVertices[6];
+	TVertex8 m_DefaultVertices[4];
+	UINT m_VertexCount;
+	UINT m_VertexStride;
+	UINT m_VertexOffset;
+	bool DirectX_On;
+	int m_Width;
+	int m_Height;
+	float WidthOriginalVideo;
+	float HeightOriginalVideo;
+	float SliderValue;
+	float alpha;
+
+protected:
+	typedef enum _ID_Interface
+	{
+		ID_INIT,
+		ID_SLIDER_1
+	} ID_Interface;
+};
+
+#endif
