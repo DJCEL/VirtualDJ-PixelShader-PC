@@ -343,7 +343,7 @@ HRESULT CShowPixelShader8::Create_PixelShader_D3D11(ID3D11Device* pDevice)
 	hr = Create_PixelShaderFromResourceCSOFile_D3D11(pDevice, resourceType, resourceName);
 	//hr = Create_PixelShaderFromCSOFile_D3D11(pDevice, pShaderCSOFilepath);
 	//hr = Create_PixelShaderFromHLSLFile_D3D11(pDevice, pShaderHLSLFilepath);
-	//hr = Create_PixelShaderFromHeaderFile_D3D11(pDevice);
+	//hr = Create_PixelShaderFromHeaderFile_D3D11(pDevice, PixelShaderSrcData);
 
 	return hr;
 }
@@ -399,18 +399,18 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromHLSLFile_D3D11(ID3D11Device* pD
 	return hr;
 }
 //-----------------------------------------------------------------------
-HRESULT CShowPixelShader8::Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* pDevice)
+HRESULT CShowPixelShader8::Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* pDevice, const char* PixelShaderData)
 {
 	HRESULT hr = S_FALSE;
 	ID3DBlob* pPixelShaderBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
 	
 	if (!pDevice) return E_FAIL;
-	if (!PixelShaderSrcData) return E_FAIL;
+	if (!PixelShaderData) return E_FAIL;
 	
-	SIZE_T PixelShaderSrcDataSize = strlen(PixelShaderSrcData);
+	SIZE_T PixelShaderSrcSize = strlen(PixelShaderData);
 
-	hr = D3DCompile(PixelShaderSrcData, PixelShaderSrcDataSize, nullptr, nullptr, nullptr, "ps_main", "ps_5_0", 0, 0, &pPixelShaderBlob, &errorBlob);
+	hr = D3DCompile(PixelShaderData, PixelShaderDataSize, nullptr, nullptr, nullptr, "ps_main", "ps_5_0", 0, 0, &pPixelShaderBlob, &errorBlob);
 	if (FAILED(hr))
 	{
 		const char* errorString = NULL;
