@@ -365,21 +365,8 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* 
 		PS_OUTPUT ps_main(PS_INPUT input)
 		{
 			PS_OUTPUT output;
-			int2 pixelCoord = int2(input.Position.xy);
-
-			// Check if the pixel is every other pixel
-			if ((pixelCoord.x % 2 == 0) && (pixelCoord.y % 2 == 0))
-			{
-				// Sample the texture at the given TexCoord coordinates
-				output.Color = g_Texture.Sample(g_TextureSampler, input.TexCoord);
-				output.Color = output.Color * input.Color;
-			}
-			else
-			{
-				// black for skipped pixels
-				output.Color = float4(0.0f, 0.0f, 0.0f, 1.0f);
-			}
-	
+			output.Color = g_Texture.Sample(g_TextureSampler, input.TexCoord);
+			output.Color = output.Color * input.Color;
 			return output;
 		}
 
@@ -431,18 +418,39 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDe
 HRESULT CShowPixelShader8::Create_PixelShaderFromResourceCSOFile_D3D11(ID3D11Device* pDevice, const WCHAR* resourceType, const WCHAR* resourceName)
 {
 	HRESULT hr = S_FALSE;
-
-	if (!pPixelShader)
-	{
-		std::string_view PixelShaderData = getResource(resourceType, resourceName);
-
-		const char* PixelShaderBytecode = PixelShaderData.data();
-		SIZE_T PixelShaderBytecodeLength = PixelShaderData.length();
-
-		hr = pDevice->CreatePixelShader(PixelShaderBytecode, PixelShaderBytecodeLength, nullptr, &pPixelShader);
-	}
+	ID3DBlob* pPixelShaderBlob = nullptr;
+	
+	hr = D3DReadResourceToBlob(resourceType, resourceName, &pPixelShaderBlob);
+	if (hr != S_OK || !pPixelShaderBlob) return S_FALSE;
+	
+	LPVOID PixelShaderBytecode = pPixelShaderBlob->GetBufferPointer();
+	SIZE_T PixelShaderBytecodeLength = pPixelShaderBlob->GetBufferSize();
+	
+	SAFE_RELEASE(pPixelShaderBlob);
+	
+	hr = pDevice->CreatePixelShader(PixelShaderBytecode, PixelShaderBytecodeLength, nullptr, &pPixelShader);
 
 	return hr;
+}
+//-----------------------------------------------------------------------
+HRESULT CShowPixelShader8::D3DReadResourceToBlob(const WCHAR* resourceType, const WCHAR* resourceName, ID3DBlob** ppContents)
+{
+	HRESULT hr = S_FALSE;
+
+	std::string_view VertexShaderData = getResource(resourceType, resourceName);
+
+	const char* VertexShaderBytecode = VertexShaderData.data();
+	SIZE_T VertexShaderBytecodeLength = VertexShaderData.length();
+
+	hr = D3DCreateBlob(VertexShaderBytecodeLength, ppContents);
+	if (hr != S_OK || !*ppContents)
+	{
+		return hr;
+	}
+
+	memcpy((*ppContents)->GetBufferPointer(), VertexShaderBytecode, VertexShaderBytecodeLength);
+
+	return S_OK;
 }
 //-----------------------------------------------------------------------
 std::string_view CShowPixelShader8::getResource(const WCHAR* resourceType, const WCHAR* resourceName)
