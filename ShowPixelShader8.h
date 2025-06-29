@@ -81,7 +81,7 @@ private:
 	HRESULT Create_PixelShader_D3D11(ID3D11Device* pDevice);
 	HRESULT Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDevice, const WCHAR* pShaderFilepath);
 	HRESULT Create_PixelShaderFromHLSLFile_D3D11(ID3D11Device* pDevice, const WCHAR* pShaderFilepath);
-	HRESULT Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* pDevice);
+	HRESULT Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* pDevice, const char* PixelShaderData);
 	HRESULT Create_PixelShaderFromResourceCSOFile_D3D11(ID3D11Device* pDevice, const WCHAR* resourceType, const WCHAR* resourceName);
 	HRESULT Create_VertexBufferDynamic_D3D11(ID3D11Device* pDevice);
 	HRESULT Update_VertexBufferDynamic_D3D11(ID3D11DeviceContext* ctx);
