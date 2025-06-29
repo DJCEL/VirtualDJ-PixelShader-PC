@@ -112,7 +112,6 @@ HRESULT VDJ_API CShowPixelShader8::OnDeviceInit()
 HRESULT VDJ_API CShowPixelShader8::OnDeviceClose()
 {
 	SAFE_RELEASE(pNewVertexBuffer);
-	SAFE_RELEASE(pImmediateContext);
 	SAFE_RELEASE(pPixelShaderBlob);
 	SAFE_RELEASE(pPixelShader);
 	pD3DDevice = nullptr;
@@ -169,7 +168,7 @@ void CShowPixelShader8::OnResizeVideo()
 //-----------------------------------------------------------------------
 HRESULT CShowPixelShader8::Initialize_D3D11(ID3D11Device* pDevice)
 {
-	HRESULT hr1 = CreateVertexBufferDynamic_D3D11(pDevice);
+	HRESULT hr1 = Create_VertexBufferDynamic_D3D11(pDevice);
 	HRESULT hr2 = Create_PixelShader_D3D11(pDevice);
 
 	return S_OK;
@@ -183,7 +182,7 @@ HRESULT CShowPixelShader8::Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderRe
 	if (!pTextureView) return E_FAIL;
 	if (!pNewVertexBuffer)
 	{
-		hr = CreateVertexBufferDynamic_D3D11(pDevice);
+		hr = Create_VertexBufferDynamic_D3D11(pDevice);
 		if (hr != S_OK || !pNewVertexBuffer) return E_FAIL;
 	}
 	if (!pPixelShader)
@@ -200,8 +199,8 @@ HRESULT CShowPixelShader8::Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderRe
 	}
 
 
-	pImmediateContext->OMGetRenderTargets(1, &pRenderTargetView, nullptr);
-	if (!pRenderTargetView) return S_FALSE;
+	//pImmediateContext->OMGetRenderTargets(1, &pRenderTargetView, nullptr);
+	//if (!pRenderTargetView) return S_FALSE;
 
 	//hr = DrawDeck();
 
@@ -210,7 +209,7 @@ HRESULT CShowPixelShader8::Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderRe
 	//pImmediateContext->ClearRenderTargetView(pRenderTargetView, backgroundColor);
 
 
-	UpdateVertices_Dynamic_D3D11(pImmediateContext);
+	Update_VertexBufferDynamic_D3D11(pImmediateContext);
 	pImmediateContext->IASetVertexBuffers(0, 1, &pNewVertexBuffer, &m_VertexStride, &m_VertexOffset);
 	pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -231,7 +230,7 @@ HRESULT CShowPixelShader8::Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderRe
 	return S_OK;
 }
 // ---------------------------------------------------------------------- -
-HRESULT CShowPixelShader8::CreateVertexBufferDynamic_D3D11(ID3D11Device* pDevice)
+HRESULT CShowPixelShader8::Create_VertexBufferDynamic_D3D11(ID3D11Device* pDevice)
 {
 	HRESULT hr = S_FALSE;
 
@@ -258,7 +257,31 @@ HRESULT CShowPixelShader8::CreateVertexBufferDynamic_D3D11(ID3D11Device* pDevice
 	return S_OK;
 }
 //-----------------------------------------------------------------------
-HRESULT CShowPixelShader8::UpdateVertices_D3D11()
+HRESULT CShowPixelShader8::Update_VertexBufferDynamic_D3D11(ID3D11DeviceContext* ctx)
+{
+	HRESULT hr = S_FALSE;
+
+	if (!ctx) return S_FALSE;
+	if (!pNewVertexBuffer) return S_FALSE;
+
+	D3D11_MAPPED_SUBRESOURCE MappedSubResource;
+	ZeroMemory(&MappedSubResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+
+	hr = ctx->Map(pNewVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, 0, &MappedSubResource);
+	if (hr != S_OK) return S_FALSE;
+
+	Update_Vertices_D3D11();
+	//Update_VerticesV2_D3D11();
+
+	memcpy(MappedSubResource.pData, pNewVertices, m_VertexCount * sizeof(TLVERTEX));
+
+	ctx->Unmap(pNewVertexBuffer, NULL);
+
+	return S_OK;
+}
+//-----------------------------------------------------------------------
+HRESULT CShowPixelShader8::Update_Vertices_D3D11()
 {
 	float frameWidth = (float) m_Width;
 	float frameHeight = (float) m_Height;
@@ -284,26 +307,21 @@ HRESULT CShowPixelShader8::UpdateVertices_D3D11()
 	return S_OK;
 }
 //-----------------------------------------------------------------------
-HRESULT CShowPixelShader8::UpdateVertices_Dynamic_D3D11(ID3D11DeviceContext* ctx)
+HRESULT CShowPixelShader8::Update_VerticesV2_D3D11()
 {
 	HRESULT hr = S_FALSE;
 
-	if (!ctx) return S_FALSE;
-	if (!pNewVertexBuffer) return S_FALSE;
+	int curTextureW = width;
+	int curTextureH = height;
+	float curTextureAR = 1.0f;
 
-	D3D11_MAPPED_SUBRESOURCE MappedSubResource;
-	ZeroMemory(&MappedSubResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+	int srcX = 0, srcY = 0, srcWidth = curTextureW, srcHeight = curTextureH;
+	int dstX = 0, dstY = 0, dstWidth = width, dstHeight = height;
 
+	initImageSize(&srcX, &srcY, &srcWidth, &srcHeight, curTextureAR, 0, width, height, &dstX, &dstY, &dstWidth, &dstHeight);
 
-	hr = ctx->Map(pNewVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, 0, &MappedSubResource);
-	if (hr != S_OK) return S_FALSE;
-
-	UpdateVertices_D3D11();
-	//UpdateVertices_v2_D3D11();
-
-	memcpy(MappedSubResource.pData, pNewVertices, m_VertexCount * sizeof(TLVERTEX));
-
-	ctx->Unmap(pNewVertexBuffer, NULL);
+	setVertexDst((float)dstX, (float)dstY, (float)dstWidth, (float)dstHeight);
+	setVertexSrc((float)srcX, (float)srcY, (float)srcWidth, (float)srcHeight, (float)curTextureW, (float)curTextureH);
 
 	return S_OK;
 }
@@ -383,10 +401,10 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* 
 	LPVOID PixelShaderBytecode = pPixelShaderBlob->GetBufferPointer();
 	SIZE_T PixelShaderBytecodeLength = pPixelShaderBlob->GetBufferSize();
 	
-	hr = pDevice->CreatePixelShader(PixelShaderBytecode, PixelShaderBytecodeLength, nullptr, &pPixelShader);
-
 	SAFE_RELEASE(pPixelShaderBlob);
 
+	hr = pDevice->CreatePixelShader(PixelShaderBytecode, PixelShaderBytecodeLength, nullptr, &pPixelShader);
+	
 	return hr;
 }
 //-----------------------------------------------------------------------
@@ -402,7 +420,8 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDe
 	LPVOID PixelShaderBytecode = pPixelShaderBlob->GetBufferPointer();
 	SIZE_T PixelShaderBytecodeLength = pPixelShaderBlob->GetBufferSize();
 
-	// Create the pixel shader from the buffer.
+	SAFE_RELEASE(pPixelShaderBlob);
+
 	hr = pDevice->CreatePixelShader(PixelShaderBytecode, PixelShaderBytecodeLength, nullptr, &pPixelShader);
 
 	return hr;
@@ -412,15 +431,8 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromResourceCSOFile_D3D11(ID3D11Dev
 {
 	HRESULT hr = S_FALSE;
 
-
-
 	if (!pPixelShader)
 	{
-		//TRESOURCEREF ref = {L"RT_RCDATA", L"PIXELSHADER.CSO"};
-		//DWORD size;
-		//LPVOID data;
-		//hr = LoadFileFromResource(ref, &size, &data);
-
 		std::string_view PixelShaderData = getResource(RT_RCDATA, L"PIXELSHADER.CSO");
 
 		const char* PixelShaderBytecode = PixelShaderData.data();
@@ -449,38 +461,6 @@ std::string_view CShowPixelShader8::getResource(const WCHAR* resourceType, const
 		return std::string_view("");
 
 	return std::string_view(data, size);
-}
-//------------------------------------------------------------------------------
-HRESULT CShowPixelShader8::LoadFileFromResource(TRESOURCEREF ref, DWORD& size, LPVOID& data)
-{
-	if (ref.type == nullptr || ref.name == nullptr) return S_FALSE;
-
-	HRSRC rc = FindResource(hInstance, ref.name, ref.type);
-	if (rc == nullptr) return S_FALSE;
-	HGLOBAL rcData = LoadResource(hInstance, rc);
-	if (rcData == nullptr) return S_FALSE;
-	size = SizeofResource(hInstance, rc);
-	data = LockResource(rcData);
-	return S_OK;
-}
-//-----------------------------------------------------------------------
-HRESULT CShowPixelShader8::UpdateVertices_v2_D3D11()
-{
-	HRESULT hr = S_FALSE;
-
-	int curTextureW = width;
-	int curTextureH = height;
-	float curTextureAR = 1.0f;
-
-	int srcX = 0, srcY = 0, srcWidth = curTextureW, srcHeight = curTextureH;
-	int dstX = 0, dstY = 0, dstWidth = width, dstHeight = height;
-
-	initImageSize(&srcX, &srcY, &srcWidth, &srcHeight, curTextureAR, 0, width, height, &dstX, &dstY, &dstWidth, &dstHeight);
-
-	setVertexDst((float)dstX, (float)dstY, (float)dstWidth, (float)dstHeight);
-	setVertexSrc((float)srcX, (float)srcY, (float)srcWidth, (float)srcHeight, (float)curTextureW, (float)curTextureH);
-
-	return S_OK;
 }
 //-----------------------------------------------------------------------
 void CShowPixelShader8::initImageSize(int* srcX, int* srcY, int* srcWidth, int* srcHeight, float srcAr, int srcOrientation, int width, int height, int* dstX, int* dstY, int* dstWidth, int* dstHeight)
