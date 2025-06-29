@@ -8,7 +8,6 @@ CShowPixelShader8::CShowPixelShader8()
 	pNewVertexBuffer = nullptr;
 	pPixelShader = nullptr;
 	pRenderTargetView = nullptr;
-	pPixelShaderBlob = nullptr;
 	ZeroMemory(pNewVertices, 6 * sizeof(TVertex8));
 	ZeroMemory(m_DefaultVertices, 4 * sizeof(TVertex8));
 	DirectX_On = false;
@@ -112,7 +111,6 @@ HRESULT VDJ_API CShowPixelShader8::OnDeviceInit()
 HRESULT VDJ_API CShowPixelShader8::OnDeviceClose()
 {
 	SAFE_RELEASE(pNewVertexBuffer);
-	SAFE_RELEASE(pPixelShaderBlob);
 	SAFE_RELEASE(pPixelShader);
 	pD3DDevice = nullptr;
 	DirectX_On = false;
@@ -342,6 +340,7 @@ HRESULT CShowPixelShader8::Create_PixelShader_D3D11(ID3D11Device* pDevice)
 HRESULT CShowPixelShader8::Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* pDevice)
 {
 	HRESULT hr = S_FALSE;
+	ID3DBlob* pPixelShaderBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
 
 	const char* PixelShaderSrcData = R"(
@@ -411,6 +410,7 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* 
 HRESULT CShowPixelShader8::Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDevice)
 {
 	HRESULT hr = S_FALSE;
+	ID3DBlob* pPixelShaderBlob = nullptr;
 
 	const WCHAR* pShaderFileName = L"PixelShader.cso";
 
