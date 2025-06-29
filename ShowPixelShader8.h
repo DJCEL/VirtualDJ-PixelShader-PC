@@ -94,10 +94,10 @@ private:
 	HRESULT Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDevice);
 	HRESULT Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* pDevice);
 	HRESULT Create_PixelShaderFromResourceCSOFile_D3D11(ID3D11Device* pDevice);
-	HRESULT CreateVertexBufferDynamic_D3D11(ID3D11Device* pDevice);
+	HRESULT Create_VertexBufferDynamic_D3D11(ID3D11Device* pDevice);
+	HRESULT Update_VertexBufferDynamic_D3D11(ID3D11DeviceContext* ctx);
 	HRESULT UpdateVertices_D3D11();
 	HRESULT UpdateVertices_v2_D3D11();
-	HRESULT UpdateVertices_Dynamic_D3D11(ID3D11DeviceContext* ctx);
 	std::string_view getResource(const WCHAR* resourceType, const WCHAR* resourceName);
 	HRESULT LoadFileFromResource(TRESOURCEREF ref, DWORD& size, LPVOID& data);
 	void initImageSize(int* srcX, int* srcY, int* srcWidth, int* srcHeight, float srcAr, int srcOrientation, int width, int height, int* dstX, int* dstY, int* dstWidth, int* dstHeight);
