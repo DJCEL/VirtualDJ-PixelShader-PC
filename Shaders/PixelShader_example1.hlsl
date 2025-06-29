@@ -35,15 +35,16 @@ PS_OUTPUT ps_main(PS_INPUT input)
 	// Check if the pixel is every other pixel
     if ((pixelCoord.x % 2 == 0) && (pixelCoord.y % 2 == 0))
     {
-		// Sample the texture at the given TexCoord coordinates
+	// Sample the texture at the given TexCoord coordinates
         output.Color = g_Texture.Sample(g_TextureSampler, input.TexCoord);
-        output.Color = output.Color * input.Color;
     }
     else
     {
-		// black for skipped pixels
+	// black for skipped pixels
         output.Color = float4(0.0f, 0.0f, 0.0f, 1.0f);
     }
+
+    output.Color = output.Color * input.Color;
 	
     return output;
 }
