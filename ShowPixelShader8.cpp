@@ -326,6 +326,7 @@ HRESULT CShowPixelShader8::Update_VerticesV2_D3D11()
 HRESULT CShowPixelShader8::Create_PixelShader_D3D11(ID3D11Device* pDevice)
 {
 	HRESULT hr = S_FALSE;
+	const WCHAR* pShaderHLSLFilepath = L"PixelShader.hlsl";
 	const WCHAR* pShaderCSOFilepath = L"PixelShader.cso";
 	const WCHAR* resourceType = RT_RCDATA;
 	const WCHAR* resourceName = L"PIXELSHADER.CSO";
@@ -334,7 +335,59 @@ HRESULT CShowPixelShader8::Create_PixelShader_D3D11(ID3D11Device* pDevice)
 
 	hr = Create_PixelShaderFromResourceCSOFile_D3D11(pDevice, resourceType, resourceName);
 	//hr = Create_PixelShaderFromCSOFile_D3D11(pDevice, pShaderCSOFilepath);
+	//hr = Create_PixelShaderFromHLSLFile_D3D11(pDevice, pShaderHLSLFilepath);
 	//hr = Create_PixelShaderFromHeaderFile_D3D11(pDevice);
+
+	return hr;
+}
+//-----------------------------------------------------------------------
+HRESULT CShowPixelShader8::Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDevice,pShaderFilepath)
+{
+	HRESULT hr = S_FALSE;
+	ID3DBlob* pPixelShaderBlob = nullptr;
+
+	hr = D3DReadFileToBlob(pShaderFilepath, &pPixelShaderBlob);
+	if (hr != S_OK || !pPixelShaderBlob) return S_FALSE;
+
+	LPVOID PixelShaderBytecode = pPixelShaderBlob->GetBufferPointer();
+	SIZE_T PixelShaderBytecodeLength = pPixelShaderBlob->GetBufferSize();
+
+	SAFE_RELEASE(pPixelShaderBlob);
+
+	hr = pDevice->CreatePixelShader(PixelShaderBytecode, PixelShaderBytecodeLength, nullptr, &pPixelShader);
+
+	return hr;
+}
+//-----------------------------------------------------------------------
+HRESULT CShowPixelShader8::Create_PixelShaderFromHLSLFile_D3D11(ID3D11Device* pDevice, const WCHAR* pShaderFilepath)
+{
+	HRESULT hr = S_FALSE;
+	ID3DBlob* pPixelShaderBlob = nullptr;
+	ID3DBlob* errorBlob = nullptr;
+
+	hr = D3DCompileFromFile(pShaderFilepath, nullptr, nullptr, "ps_main", "ps_5_0", 0, 0, &pPixelShaderBlob, &errorBlob);
+	if (FAILED(hr))
+	{
+		const char* errorString = NULL;
+		if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+		{
+			errorString = "Could not compile Pixel-Shader. HLSL file not found.";
+		}
+		else if (errorBlob)
+		{
+			errorString = (const char*) errorBlob->GetBufferPointer();
+			errorBlob->Release();
+		}
+		MessageBoxA(NULL, errorString, "Shader Compiler Error", MB_ICONERROR | MB_OK);
+		return hr;
+	}
+
+	LPVOID PixelShaderBytecode = pPixelShaderBlob->GetBufferPointer();
+	SIZE_T PixelShaderBytecodeLength = pPixelShaderBlob->GetBufferSize();
+
+	SAFE_RELEASE(pPixelShaderBlob);
+
+	hr = pDevice->CreatePixelShader(PixelShaderBytecode, PixelShaderBytecodeLength, nullptr, &pPixelShader);
 
 	return hr;
 }
@@ -393,24 +446,6 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* 
 
 	hr = pDevice->CreatePixelShader(PixelShaderBytecode, PixelShaderBytecodeLength, nullptr, &pPixelShader);
 	
-	return hr;
-}
-//-----------------------------------------------------------------------
-HRESULT CShowPixelShader8::Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDevice,pShaderFilepath)
-{
-	HRESULT hr = S_FALSE;
-	ID3DBlob* pPixelShaderBlob = nullptr;
-
-	hr = D3DReadFileToBlob(pShaderFilepath, &pPixelShaderBlob);
-	if (hr != S_OK || !pPixelShaderBlob) return S_FALSE;
-
-	LPVOID PixelShaderBytecode = pPixelShaderBlob->GetBufferPointer();
-	SIZE_T PixelShaderBytecodeLength = pPixelShaderBlob->GetBufferSize();
-
-	SAFE_RELEASE(pPixelShaderBlob);
-
-	hr = pDevice->CreatePixelShader(PixelShaderBytecode, PixelShaderBytecodeLength, nullptr, &pPixelShader);
-
 	return hr;
 }
 //-----------------------------------------------------------------------
