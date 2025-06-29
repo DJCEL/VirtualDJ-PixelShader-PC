@@ -79,13 +79,6 @@ private:
 		D3DXCOLOR color;
 		D3DTEXCOORD texture;
 	};
-	typedef struct _TRESOURCEREF
-	{
-		const TCHAR* type;
-		const TCHAR* name;
-
-	} TRESOURCEREF;
-
 	void OnResizeVideo();
 	void OnSlider(int id);
 	HRESULT Initialize_D3D11(ID3D11Device* pDevice);
@@ -96,10 +89,9 @@ private:
 	HRESULT Create_PixelShaderFromResourceCSOFile_D3D11(ID3D11Device* pDevice);
 	HRESULT Create_VertexBufferDynamic_D3D11(ID3D11Device* pDevice);
 	HRESULT Update_VertexBufferDynamic_D3D11(ID3D11DeviceContext* ctx);
-	HRESULT UpdateVertices_D3D11();
-	HRESULT UpdateVertices_v2_D3D11();
+	HRESULT Update_Vertices_D3D11();
+	HRESULT Update_VerticesV2_D3D11();
 	std::string_view getResource(const WCHAR* resourceType, const WCHAR* resourceName);
-	HRESULT LoadFileFromResource(TRESOURCEREF ref, DWORD& size, LPVOID& data);
 	void initImageSize(int* srcX, int* srcY, int* srcWidth, int* srcHeight, float srcAr, int srcOrientation, int width, int height, int* dstX, int* dstY, int* dstWidth, int* dstHeight);
 	void setVertexDst(float dstX, float dstY, float width, float height);
 	void setVertexSrc(float srcX, float srcY, float srcWidth, float srcHeight, float textureWidth, float textureHeight);
@@ -111,7 +103,6 @@ private:
 	ID3D11Buffer* pNewVertexBuffer;
 	ID3D11PixelShader* pPixelShader;
 	ID3D11RenderTargetView* pRenderTargetView;
-	ID3DBlob* pPixelShaderBlob;
 
 	TLVERTEX pNewVertices[6];
 	TVertex8 m_DefaultVertices[4];
