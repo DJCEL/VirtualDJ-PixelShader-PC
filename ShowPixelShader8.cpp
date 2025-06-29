@@ -196,31 +196,30 @@ HRESULT CShowPixelShader8::Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderRe
 		if (!pImmediateContext) return E_FAIL;
 	}
 
+	Update_VertexBufferDynamic_D3D11(pImmediateContext);
 
 	//pImmediateContext->OMGetRenderTargets(1, &pRenderTargetView, nullptr);
 	//if (!pRenderTargetView) return S_FALSE;
-
-	//hr = DrawDeck();
-
 	
+	hr = DrawDeck();
+
 	//FLOAT backgroundColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	//pImmediateContext->ClearRenderTargetView(pRenderTargetView, backgroundColor);
 
+	//pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
 
-	Update_VertexBufferDynamic_D3D11(pImmediateContext);
 	pImmediateContext->IASetVertexBuffers(0, 1, &pNewVertexBuffer, &m_VertexStride, &m_VertexOffset);
 	pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		
-	//UINT sampleMask = 0xffffffff;
-	//pImmediateContext->OMSetBlendState(nullptr, nullptr, sampleMask);
-		
+	
 	pImmediateContext->PSSetShader(pPixelShader, nullptr, 0);
 
 	if (pTextureView)
 	{
 		pImmediateContext->PSSetShaderResources(0, 1, &pTextureView);
 	}
+
+	//UINT sampleMask = 0xffffffff;
+	//pImmediateContext->OMSetBlendState(nullptr, nullptr, sampleMask);
 
 	pImmediateContext->Draw(m_VertexCount, 0);
 
@@ -248,7 +247,6 @@ HRESULT CShowPixelShader8::Create_VertexBufferDynamic_D3D11(ID3D11Device* pDevic
 	VertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // Allow CPU to write in buffer
 	VertexBufferDesc.MiscFlags = 0;
 
-	// Create the vertex buffer.
 	hr = pDevice->CreateBuffer(&VertexBufferDesc, NULL, &pNewVertexBuffer);
 	if (hr != S_OK || !pNewVertexBuffer) return S_FALSE;
 
