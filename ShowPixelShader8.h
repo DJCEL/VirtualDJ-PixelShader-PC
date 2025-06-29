@@ -81,6 +81,8 @@ private:
 	};
 	void OnResizeVideo();
 	void OnSlider(int id);
+	HRESULT D3DReadResourceToBlob(const WCHAR* resourceType, const WCHAR* resourceName, ID3DBlob** ppContents);
+	std::string_view getResource(const WCHAR* resourceType, const WCHAR* resourceName);
 	HRESULT Initialize_D3D11(ID3D11Device* pDevice);
 	HRESULT Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderResourceView* pTextureView, TVertex8* pVertices);
 	HRESULT Create_PixelShader_D3D11(ID3D11Device* pDevice);
@@ -91,7 +93,7 @@ private:
 	HRESULT Update_VertexBufferDynamic_D3D11(ID3D11DeviceContext* ctx);
 	HRESULT Update_Vertices_D3D11();
 	HRESULT Update_VerticesV2_D3D11();
-	std::string_view getResource(const WCHAR* resourceType, const WCHAR* resourceName);
+	
 	void initImageSize(int* srcX, int* srcY, int* srcWidth, int* srcHeight, float srcAr, int srcOrientation, int width, int height, int* dstX, int* dstY, int* dstWidth, int* dstHeight);
 	void setVertexDst(float dstX, float dstY, float width, float height);
 	void setVertexSrc(float srcX, float srcY, float srcWidth, float srcHeight, float textureWidth, float textureHeight);
