@@ -397,33 +397,10 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* 
 	HRESULT hr = S_FALSE;
 	ID3DBlob* pPixelShaderBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
-
-	const char* PixelShaderSrcData = R"(
-		Texture2D g_Texture : register(t0);
-		sampler g_TextureSampler : register(s0);
-
-		struct PS_INPUT
-		{
-			float4 Position : SV_Position;
-			float4 Color : COLOR;
-			float2 TexCoord : TEXCOORD0;
-		};
-
-		struct PS_OUTPUT
-		{
-			float4 Color : SV_TARGET;
-		};
-
-		PS_OUTPUT ps_main(PS_INPUT input)
-		{
-			PS_OUTPUT output;
-			output.Color = g_Texture.Sample(g_TextureSampler, input.TexCoord);
-			output.Color = output.Color * input.Color;
-			return output;
-		}
-
-		)";
-
+	
+	if (!pDevice) return E_FAIL;
+	if (!PixelShaderSrcData) return E_FAIL;
+	
 	SIZE_T PixelShaderSrcDataSize = strlen(PixelShaderSrcData);
 
 	hr = D3DCompile(PixelShaderSrcData, PixelShaderSrcDataSize, nullptr, nullptr, nullptr, "ps_main", "ps_5_0", 0, 0, &pPixelShaderBlob, &errorBlob);
