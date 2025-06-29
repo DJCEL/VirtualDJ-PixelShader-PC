@@ -436,18 +436,18 @@ HRESULT CShowPixelShader8::D3DReadResourceToBlob(const WCHAR* resourceType, cons
 {
 	HRESULT hr = S_FALSE;
 
-	std::string_view VertexShaderData = getResource(resourceType, resourceName);
+	std::string_view ShaderData = getResource(resourceType, resourceName);
 
-	const char* VertexShaderBytecode = VertexShaderData.data();
-	SIZE_T VertexShaderBytecodeLength = VertexShaderData.length();
+	const char* ShaderBytecode = ShaderData.data();
+	SIZE_T ShaderBytecodeLength = ShaderData.length();
 
-	hr = D3DCreateBlob(VertexShaderBytecodeLength, ppContents);
+	hr = D3DCreateBlob(ShaderBytecodeLength, ppContents);
 	if (hr != S_OK || !*ppContents)
 	{
 		return hr;
 	}
 
-	memcpy((*ppContents)->GetBufferPointer(), VertexShaderBytecode, VertexShaderBytecodeLength);
+	memcpy((*ppContents)->GetBufferPointer(), ShaderBytecode, ShaderBytecodeLength);
 
 	return S_OK;
 }
