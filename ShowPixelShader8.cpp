@@ -269,8 +269,8 @@ HRESULT CShowPixelShader8::Update_VertexBufferDynamic_D3D11(ID3D11DeviceContext*
 	hr = ctx->Map(pNewVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, 0, &MappedSubResource);
 	if (hr != S_OK) return S_FALSE;
 
-	Update_Vertices_D3D11();
-	//Update_VerticesV2_D3D11();
+	hr = Update_Vertices_D3D11();
+	//hr = Update_VerticesV2_D3D11();
 
 	memcpy(MappedSubResource.pData, pNewVertices, m_VertexCount * sizeof(TLVERTEX));
 
