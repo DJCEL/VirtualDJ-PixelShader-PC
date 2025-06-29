@@ -389,11 +389,17 @@ HRESULT CShowPixelShader8::Create_PixelShaderFromHeaderFile_D3D11(ID3D11Device* 
 	hr = D3DCompile(PixelShaderSrcData, PixelShaderSrcDataSize, nullptr, nullptr, nullptr, "ps_main", "ps_5_0", 0, 0, &pPixelShaderBlob, &errorBlob);
 	if (FAILED(hr))
 	{
-		if (errorBlob) 
+		const char* errorString = NULL;
+		if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
 		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+			errorString = "Could not compile shader; file not found";
+		}
+		else if (errorBlob) 
+		{
+			errorString = (const char*) errorBlob->GetBufferPointer();
 			errorBlob->Release();
 		}
+		MessageBoxA(NULL, errorString, "Shader Compiler Error", MB_ICONERROR | MB_OK);
 		return hr;
 	}
 
