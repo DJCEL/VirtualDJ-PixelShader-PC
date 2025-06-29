@@ -204,6 +204,7 @@ HRESULT CShowPixelShader8::Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderRe
 	hr = DrawDeck();
 
 	//FLOAT backgroundColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	//FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
 	//pImmediateContext->ClearRenderTargetView(pRenderTargetView, backgroundColor);
 
 	//pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
