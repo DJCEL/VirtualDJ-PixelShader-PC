@@ -34,17 +34,19 @@ PS_OUTPUT ps_main(PS_INPUT input)
     float Center = 0.5;
     float4 rgbaValue = 0;
     float scale = 0;
-    
+    int SAMPLECOUNT = 15;
+    float DENOM = 14.0;
+
     input.TexCoord -= Center;
     
     
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < SAMPLECOUNT; i++)
     {
-        scale = 1.0 + fBlurAmont * (i / 14.0);
+        scale = 1.0 + fBlurAmont * (i / DENOM);
         rgbaValue += g_Texture.Sample(g_TextureSampler, input.TexCoord * scale + Center);
         
     }
-    rgbaValue /= 15;
+    rgbaValue /= SAMPLECOUNT;
     
     output.Color = rgbaValue;
     output.Color = output.Color * input.Color;
