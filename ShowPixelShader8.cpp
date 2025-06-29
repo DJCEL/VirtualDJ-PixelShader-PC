@@ -31,7 +31,7 @@ HRESULT VDJ_API CShowPixelShader8::OnLoad()
 {
 	HRESULT hr = S_FALSE;
 
-	DeclareParameterSlider(&SliderValue, ID_SLIDER_1, "Transparency", "Tr", 0.0f);
+	DeclareParameterSlider(&SliderValue, ID_SLIDER_1, "Wet/Dry", "W/D", 1.0f);
 	
 	OnParameter(ID_INIT);
 	return S_OK;
@@ -72,7 +72,7 @@ void CShowPixelShader8::OnSlider(int id)
 	switch (id)
 	{
 	case ID_SLIDER_1:
-		alpha = 1.0f - SliderValue;
+		alpha = SliderValue;
 		break;
 	}
 
@@ -83,7 +83,7 @@ HRESULT VDJ_API CShowPixelShader8::OnGetParameterString(int id, char* outParam, 
 	switch (id)
 	{
 		case ID_SLIDER_1:
-			sprintf_s(outParam, outParamSize, "%.2f", SliderValue);
+			sprintf_s(outParam, outParamSize, "%.0f%%", SliderValue * 100);
 			break;
 	}
 
