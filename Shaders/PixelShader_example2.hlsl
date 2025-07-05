@@ -5,8 +5,8 @@
 //--------------------------------------------------------------------------------------
 // Textures and Samplers
 //--------------------------------------------------------------------------------------
-Texture2D g_Texture : register(t0);
-sampler g_TextureSampler : register(s0);
+Texture2D g_Texture2D : register(t0);
+SamplerState g_SamplerState : register(s0);
 
 //--------------------------------------------------------------------------------------
 // Input structure
@@ -36,6 +36,7 @@ PS_OUTPUT ps_main(PS_INPUT input)
     float scale = 0;
     int SAMPLECOUNT = 15;
     float DENOM = 14.0;
+    float2 location = 0;
 
     input.TexCoord -= Center;
     
@@ -43,7 +44,8 @@ PS_OUTPUT ps_main(PS_INPUT input)
     for (int i = 0; i < SAMPLECOUNT; i++)
     {
         scale = 1.0 + fBlurAmont * (i / DENOM);
-        rgbaValue += g_Texture.Sample(g_TextureSampler, input.TexCoord * scale + Center);
+	location = input.TexCoord * scale + Center;
+        rgbaValue += g_Texture2D.Sample(g_SamplerState, location);
         
     }
     rgbaValue /= SAMPLECOUNT;
