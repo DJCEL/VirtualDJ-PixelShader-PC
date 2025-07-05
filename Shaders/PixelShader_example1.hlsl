@@ -30,7 +30,8 @@ struct PS_OUTPUT
 PS_OUTPUT ps_main(PS_INPUT input)
 {
     PS_OUTPUT output;
-    int2 pixelCoord = int2(input.Position.xy);
+    float2 position = input.Position.xy;
+    int2 pixelCoord = int2(position);
 
 	// Check if the pixel is every other pixel
     if ((pixelCoord.x % 2 == 0) && (pixelCoord.y % 2 == 0))
