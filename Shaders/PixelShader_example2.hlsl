@@ -32,11 +32,12 @@ PS_OUTPUT ps_main(PS_INPUT input)
     PS_OUTPUT output;
     float fBlurAmont = 0.25;
     float Center = 0.5;
-    float4 rgbaValue = 0;
+    float4 rgbaAvgValue = 0;
     float scale = 0;
     int SAMPLECOUNT = 15;
     float DENOM = 14.0;
     float2 location = 0;
+    float4 textureRGBA = 0;
 
     input.TexCoord -= Center;
     
@@ -45,12 +46,13 @@ PS_OUTPUT ps_main(PS_INPUT input)
     {
         scale = 1.0 + fBlurAmont * (i / DENOM);
 	location = input.TexCoord * scale + Center;
-        rgbaValue += g_Texture2D.Sample(g_SamplerState, location);
+	textureRGBA = g_Texture2D.Sample(g_SamplerState, location);
+        rgbaAvgValue += textureRGBA;
         
     }
-    rgbaValue /= SAMPLECOUNT;
+    rgbaAvgValue /= SAMPLECOUNT;
     
-    output.Color = rgbaValue;
+    output.Color = rgbaAvgValue;
     output.Color = output.Color * input.Color;
     
     return output;
