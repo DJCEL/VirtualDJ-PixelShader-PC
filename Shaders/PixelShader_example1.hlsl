@@ -35,8 +35,8 @@ PS_OUTPUT ps_main(PS_INPUT input)
 	// Check if the pixel is every other pixel
     if ((pixelCoord.x % 2 == 0) && (pixelCoord.y % 2 == 0))
     {
-	// Sample the texture at the given TexCoord coordinates
         float2 location = input.TexCoord;
+        // Sample the texture at the given TexCoord coordinates
         output.Color = g_Texture2D.Sample(g_SamplerState, location);
     }
     else
