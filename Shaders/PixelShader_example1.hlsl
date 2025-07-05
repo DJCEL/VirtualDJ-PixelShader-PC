@@ -5,8 +5,8 @@
 //--------------------------------------------------------------------------------------
 // Textures and Samplers
 //--------------------------------------------------------------------------------------
-Texture2D g_Texture : register(t0);
-sampler g_TextureSampler : register(s0);
+Texture2D g_Texture2D : register(t0);
+SamplerState g_SamplerState : register(s0);
 
 //--------------------------------------------------------------------------------------
 // Input structure
@@ -36,7 +36,8 @@ PS_OUTPUT ps_main(PS_INPUT input)
     if ((pixelCoord.x % 2 == 0) && (pixelCoord.y % 2 == 0))
     {
 	// Sample the texture at the given TexCoord coordinates
-        output.Color = g_Texture.Sample(g_TextureSampler, input.TexCoord);
+        float2 location = input.TexCoord;
+        output.Color = g_Texture2D.Sample(g_SamplerState, location);
     }
     else
     {
