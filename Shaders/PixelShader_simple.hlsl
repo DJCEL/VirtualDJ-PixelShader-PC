@@ -5,8 +5,8 @@
 //--------------------------------------------------------------------------------------
 // Textures and Samplers
 //--------------------------------------------------------------------------------------
-Texture2D g_Texture : register(t0);
-sampler g_TextureSampler : register(s0);
+Texture2D g_Texture2D : register(t0);
+SamplerState g_SamplerState : register(s0);
 
 //--------------------------------------------------------------------------------------
 // Input structure
@@ -30,9 +30,10 @@ struct PS_OUTPUT
 PS_OUTPUT ps_main(PS_INPUT input)
 {
     PS_OUTPUT output;
-   
-     output.Color = g_Texture.Sample(g_TextureSampler, input.TexCoord);
-     output.Color = output.Color * input.Color;
+    float2 location = input.TexCoord;
+
+    output.Color = g_Texture2D.Sample(g_SamplerState, location);
+    output.Color = output.Color * input.Color;
     
     return output;
 }
