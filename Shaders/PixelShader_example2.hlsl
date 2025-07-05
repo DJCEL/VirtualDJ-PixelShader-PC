@@ -40,15 +40,13 @@ PS_OUTPUT ps_main(PS_INPUT input)
     float4 textureRGBA = 0;
 
     input.TexCoord -= Center;
-    
-    
+
     for (int i = 0; i < SAMPLECOUNT; i++)
     {
         scale = 1.0 + fBlurAmont * (i / DENOM);
 	location = input.TexCoord * scale + Center;
 	textureRGBA = g_Texture2D.Sample(g_SamplerState, location);
         rgbaAvgValue += textureRGBA;
-        
     }
     rgbaAvgValue /= SAMPLECOUNT;
     
