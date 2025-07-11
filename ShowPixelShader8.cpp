@@ -7,7 +7,7 @@
 CShowPixelShader8::CShowPixelShader8()
 {
 	pD3DDevice = nullptr; 
-	pImmediateContext = nullptr;
+	pD3DDeviceContext = nullptr;
 	pNewVertexBuffer = nullptr;
 	pPixelShader = nullptr;
 	pRenderTargetView = nullptr;
@@ -152,8 +152,10 @@ HRESULT VDJ_API CShowPixelShader8::OnDraw()
 	WidthOriginalVideo = m_DefaultVertices[1].position.x - m_DefaultVertices[0].position.x;
 	HeightOriginalVideo = m_DefaultVertices[3].position.y - m_DefaultVertices[0].position.y;
 
-	
-	hr = Rendering_D3D11(pD3DDevice, pTexture, vertices);
+	pDevice->GetImmediateContext(&pD3DDeviceContext);
+	if (!pImmediateContext) return E_FAIL;
+
+	hr = Rendering_D3D11(pD3DDevice, pD3DDeviceContext, pTexture, vertices);
 
 
 	return S_OK;
@@ -175,7 +177,7 @@ HRESULT CShowPixelShader8::Initialize_D3D11(ID3D11Device* pDevice)
 	return S_OK;
 }
 // -----------------------------------------------------------------------
-HRESULT CShowPixelShader8::Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderResourceView* pTextureView, TVertex8* pVertices)
+HRESULT CShowPixelShader8::Rendering_D3D11(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, ID3D11ShaderResourceView* pTextureView, TVertex8* pVertices)
 {
 	HRESULT hr = S_FALSE;
 
@@ -193,11 +195,6 @@ HRESULT CShowPixelShader8::Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderRe
 		if (hr != S_OK || !pPixelShader) return E_FAIL;
 	}
 
-	if (!pImmediateContext)
-	{
-		pDevice->GetImmediateContext(&pImmediateContext);
-		if (!pImmediateContext) return E_FAIL;
-	}
 
 	Update_VertexBufferDynamic_D3D11(pImmediateContext);
 
