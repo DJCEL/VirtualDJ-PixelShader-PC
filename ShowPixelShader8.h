@@ -118,6 +118,10 @@ private:
 		ID_INIT,
 		ID_SLIDER_1
 	} ID_Interface;
+
+	#ifndef SAFE_RELEASE
+	#define SAFE_RELEASE(x) { if (x!=nullptr) { x->Release(); x=nullptr; } }
+	#endif
 };
 
 #endif
