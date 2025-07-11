@@ -77,7 +77,7 @@ private:
 	HRESULT D3DReadResourceToBlob(const WCHAR* resourceType, const WCHAR* resourceName, ID3DBlob** ppContents);
 	std::string_view getResource(const WCHAR* resourceType, const WCHAR* resourceName);
 	HRESULT Initialize_D3D11(ID3D11Device* pDevice);
-	HRESULT Rendering_D3D11(ID3D11Device* pDevice, ID3D11ShaderResourceView* pTextureView, TVertex8* pVertices);
+	HRESULT Rendering_D3D11(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, ID3D11ShaderResourceView* pTextureView, TVertex8* pVertices);
 	HRESULT Create_PixelShader_D3D11(ID3D11Device* pDevice);
 	HRESULT Create_PixelShaderFromCSOFile_D3D11(ID3D11Device* pDevice, const WCHAR* pShaderFilepath);
 	HRESULT Create_PixelShaderFromHLSLFile_D3D11(ID3D11Device* pDevice, const WCHAR* pShaderFilepath);
