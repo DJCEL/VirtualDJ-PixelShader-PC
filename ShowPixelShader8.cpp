@@ -2,10 +2,6 @@
 
 #include "PixelShaderImport.h"
 
-#ifndef SAFE_RELEASE
-#define SAFE_RELEASE(x) { if (x!=nullptr) { x->Release(); x=nullptr; } }
-#endif
-
 
 //------------------------------------------------------------------------------------------
 CShowPixelShader8::CShowPixelShader8()
