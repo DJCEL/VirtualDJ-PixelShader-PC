@@ -95,7 +95,7 @@ private:
 	
 
 	ID3D11Device* pD3DDevice;
-	ID3D11DeviceContext* pImmediateContext;
+	ID3D11DeviceContext* pD3DDeviceContext;
 	ID3D11Buffer* pNewVertexBuffer;
 	ID3D11PixelShader* pPixelShader;
 	ID3D11RenderTargetView* pRenderTargetView;
