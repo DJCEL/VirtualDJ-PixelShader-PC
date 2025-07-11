@@ -35,7 +35,7 @@ private:
 	static const EVdjVideoEngine VDJVIDEOENGINE = VdjVideoEngineDirectX11;
 	typedef ID3D11Device VDJVIDEODEVICE;
 	typedef ID3D11ShaderResourceView VDJVIDEOTEXTURE;
-	struct D3DPOSITION
+	struct D3DXPOSITION
 	{
 		float x;
 		float y;
@@ -60,7 +60,7 @@ private:
 
 		FLOAT r, g, b, a;
 	};
-	struct D3DTEXCOORD
+	struct D3DXTEXCOORD
 	{
 		float tu;
 		float tv;
@@ -68,9 +68,9 @@ private:
 
 	struct TLVERTEX
 	{
-		D3DPOSITION position;
+		D3DXPOSITION position;
 		D3DXCOLOR color;
-		D3DTEXCOORD texture;
+		D3DXTEXCOORD texture;
 	};
 	void OnResizeVideo();
 	void OnSlider(int id);
@@ -113,7 +113,6 @@ private:
 	float SliderValue;
 	float alpha;
 
-protected:
 	typedef enum _ID_Interface
 	{
 		ID_INIT,
